@@ -1,4 +1,8 @@
 # Roadmap & Development Plans — Read.Like.audio
 
-## 🛣 Development Goals
-Add full-text offline search indexing, multi-document side-by-side split view, and automated table of contents extraction.
+## 🛣 Current state
+A working standalone teleprompter: paste text or Markdown, it formats, chunks and reads it aloud with
+a chapter TOC, numbered lines, word highlighting and bookmarked notes, all kept in LocalStorage.
+
+Plans are not kept here. They live as cards in the APK.audio roadmap,
+`Documentation/🛣Roadmap/roadmap.htm` in the parent repository.
