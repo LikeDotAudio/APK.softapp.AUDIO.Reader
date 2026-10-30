@@ -15,11 +15,18 @@ btnCloseNotes.addEventListener('click', () => {
     notesModal.style.display = 'none';
 });
 
-btnCopyNotes.addEventListener('click', () => {
-    notesOutput.select();
-    document.execCommand('copy');
+// The async Clipboard API, not the deprecated execCommand('copy'). It needs a
+// secure context (https or localhost); where it is missing or refused, the
+// notes are left selected and the button says to press Ctrl+C.
+btnCopyNotes.addEventListener('click', async () => {
     const originalText = btnCopyNotes.textContent;
-    btnCopyNotes.textContent = 'Copied!';
+    try {
+        await navigator.clipboard.writeText(notesOutput.value);
+        btnCopyNotes.textContent = 'Copied!';
+    } catch (err) {
+        notesOutput.select();
+        btnCopyNotes.textContent = 'Press Ctrl+C';
+    }
     setTimeout(() => btnCopyNotes.textContent = originalText, 1500);
 });
 

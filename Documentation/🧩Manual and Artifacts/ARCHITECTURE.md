@@ -6,12 +6,12 @@ Open `src/index.html` (Launch Pad: **Read** 🗣, or https://read.like.audio/). 
 ## Files
 | File | Role |
 |---|---|
-| `src/index.html` | Page; loads `styles.css` and, in order, `script.js`, `Prompter.js`, `Header.js`, `NoteBook.js` as classic scripts sharing globals. |
+| `src/index.html` | Page; loads `styles.css` and, in order, `behaviours.js`, `script.js`, `Prompter.js`, `Header.js`, `NoteBook.js` as classic scripts sharing globals. |
 | `src/script.js` | `formatText`, auto-format on paste, text and position persistence. |
 | `src/Prompter.js` | `parseTextToChunks` (sentences ≤ 150 chars, TOC, depth-based line numbers), `buildPrompterUI`, `speak` / `playChunk` (one `SpeechSynthesisUtterance` per chunk, chained on `onend`, word highlight from `onboundary`), voice alternation. |
 | `src/Header.js` | Controls: voice list (English first, Google/Premium/Enhanced first), speed, size, Play/Pause/Format/Clear; persists size, speed, voice. |
 | `src/NoteBook.js` | Notes modal: show, copy, clear. |
-| `src/behaviours.js` | A written catalogue of every special case; not loaded. |
+| `src/behaviours.js` | The catalogue of every special case, and `FORMATTING_RULES` — the one copy of the formatting rules, loaded first; `formatText` runs its `format`. |
 | `src/styles.css` | Dark theme; `--prompter-font-size` is set from the size control. |
 | `display.json` | Launch Pad manifest (`id: Read`, group `Pipeline` / `01 · Event`, `app` → `src/index.html`). |
 

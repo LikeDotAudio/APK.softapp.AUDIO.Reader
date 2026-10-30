@@ -10,7 +10,7 @@
  * - HTML/Markdown Removal: All HTML tags and Markdown symbols (*, _, `, ~, >) are removed.
  * - THING TO IGNORE (Exception): The '#' symbol is explicitly ignored during cleanup to preserve headings for the Table of Contents.
  * - Whitespace Correction: Multiple spaces are reduced to a single space. Leading spaces on lines are removed.
- * - Special Characters (Dashes & Pipes): Multiple dashes (---) are converted to spaces to prevent reading as "dash dash dash". The pipe symbol (|) is stripped out entirely so it's not spoken.
+ * - Special Characters (Dashes, Pipes & Arrows): Multiple dashes (---) are converted to spaces to prevent reading as "dash dash dash". The pipe symbol (|) is stripped out entirely so it's not spoken. Arrows (->, <-, →, ←) become a space.
  * - Unit Expansion: Expands unit abbreviations attached to numbers for accurate speech synthesis. For example, "6.7ms" is expanded to "6.7 milliseconds" to prevent it from being misread or unexpectedly split.
  * - Skip Large Numbers: Numbers with a value of 1,000,000 or greater (e.g., long serial numbers, IDs) are entirely stripped from the text and skipped.
  * - Newline Correction: Multiple blank lines (\n\s*\n) are reduced to exactly two newlines (\n\n).
@@ -47,8 +47,10 @@
  * - Reading Highlight: As the voice reads, the current word is wrapped in a `<span class="highlight">` tag. The script locates the word boundaries based on character indexes provided by the `onboundary` event.
  */
 
-// Example: Extracted Regex Patterns for Formatting Rules
-export const FORMATTING_RULES = {
+// THE ONE COPY of the formatting rules. Loaded as a classic script before
+// script.js (index.html), whose formatText() runs FORMATTING_RULES.format —
+// so what this file documents is what the Format button does.
+const FORMATTING_RULES = {
     stripHtmlAndMarkdown: (text) => {
         let stripped = text.replace(/<[^>]*>?/gm, '');
         return stripped.replace(/[*_`~>]/g, ''); // Note: # is excluded
@@ -65,6 +67,7 @@ export const FORMATTING_RULES = {
     removeSpecialSpeechCharacters: (text) => {
         text = text.replace(/-{2,}/g, ' '); // prevent "dash dash dash"
         text = text.replace(/\|/g, '');     // prevent saying pipe out loud
+        text = text.replace(/->|<-|→|←/g, ' '); // avoid reading arrows
         return text;
     },
     expandUnits: (text) => {
@@ -78,5 +81,15 @@ export const FORMATTING_RULES = {
             if (num >= 1000000) return '';
             return match;
         });
+    },
+    // The whole pipeline, in the order formatText() always applied it.
+    format(text) {
+        text = this.stripHtmlAndMarkdown(text);
+        text = this.removeSpecialSpeechCharacters(text);
+        text = this.expandUnits(text);
+        text = this.skipLargeNumbers(text);
+        text = this.fixSpacing(text);
+        text = this.fixPunctuation(text);
+        return text.trim();
     }
 };

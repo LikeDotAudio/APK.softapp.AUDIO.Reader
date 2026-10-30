@@ -34,10 +34,10 @@ The application logic is modularized inside the `src/` directory for maintainabi
 - **`Header.js`**: Manages the top-level UI controls, sliders, and format buttons.
 - **`Prompter.js`**: The core engine that parses text, calculates depth-based line numbers, tracks the Table of Contents, and runs the SpeechSynthesis logic (including Voice Alternation).
 - **`NoteBook.js`**: Manages the interactive notes modal, handling clipping sentences, clearing, and copying to the clipboard.
-- **`script.js`**: Handles basic initialization, local storage binding, and the formatting/filtering logic (`formatText`, auto-format on paste).
-- **`behaviours.js`**: Documentation in code: the list of every formatting, chunking and speech special case, with the formatting regexes restated as an exported `FORMATTING_RULES` object. `index.html` does not load it; the live rules are the ones in `script.js` and `Prompter.js`.
+- **`script.js`**: Handles basic initialization, local storage binding, and `formatText` (auto-format on paste), which applies `FORMATTING_RULES`.
+- **`behaviours.js`**: The list of every formatting, chunking and speech special case, and `FORMATTING_RULES` — the one copy of the formatting rules. `index.html` loads it before `script.js`, whose `formatText` runs `FORMATTING_RULES.format`; the chunking rules live in `Prompter.js`.
 
-The scripts are classic (non-module) scripts sharing globals, loaded in the order `script.js`, `Prompter.js`, `Header.js`, `NoteBook.js` by `src/index.html`.
+The scripts are classic (non-module) scripts sharing globals, loaded in the order `behaviours.js`, `script.js`, `Prompter.js`, `Header.js`, `NoteBook.js` by `src/index.html`.
 
 ## Running Locally & Deployment
 It has no build step, framework or package dependency; the only external request is the Inter font from Google Fonts. Open `src/index.html` in any modern web browser. There are no automated tests.
@@ -55,7 +55,7 @@ The principles the code follows, and where it shows them:
 - **Keep going on an error.** Chrome's `interrupted` error advances to the next chunk instead of stopping the read; a manual stop is told apart by `isManuallyStopped`. — `src/Prompter.js` (`utterThis.onerror`)
 - **Never lose the reader's place.** Text, position, text size, speed, voice and notes are written to LocalStorage as they change and restored on load. — `src/script.js`, `src/Prompter.js`, `src/Header.js`, `src/NoteBook.js`
 - **Clean text for the ear, not the eye.** Markup, arrows, pipes and dash runs are removed and units expanded so the voice says what a reader would; periods are left alone so filenames survive. — `src/script.js` (`formatText`), `src/behaviours.js`
-- **No machinery.** Plain HTML, CSS and four classic scripts; no build, no framework, no server. — `src/index.html`
+- **No machinery.** Plain HTML, CSS and five classic scripts; no build, no framework, no server. — `src/index.html`
 - **Where it does not hold:** it is a standalone site that knows no broker. The APK.audio Soft Apps doctrine says a soft app's door out is the bus (`display.json` declares `APK.audio/Gui/Display/Read`), and this app has none; everything stays in the browser.
 
 ## Documentation

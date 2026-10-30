@@ -25,42 +25,15 @@ textInput.addEventListener('input', () => {
 
 
 
-// Basic text formatter
+// Basic text formatter — the rules live in behaviours.js (FORMATTING_RULES).
 function formatText() {
     let text = textInput.value;
     
     if (!text.trim()) return;
 
-    // Remove HTML/Markdown tags (preserve # for headings)
-    text = text.replace(/<[^>]*>?/gm, '');
-    text = text.replace(/[*_`~>]/g, '');
+    text = FORMATTING_RULES.format(text);
     
-    // Special character behaviours
-    text = text.replace(/-{2,}/g, ' '); // --- is not read as dash dash dash
-    text = text.replace(/\|/g, '');     // | PIPE is not said out loud
-    text = text.replace(/->|<-|→|←/g, ' '); // Avoid reading arrows
-    
-    // Units formatting
-    text = text.replace(/(\d)\s*ms\b/gi, '$1 milliseconds'); // 6.7ms -> 6.7 milliseconds
-    
-    // Skip large numbers (over a million)
-    text = text.replace(/\b\d+(?:,\d{3})*(?:\.\d+)?\b/g, (match) => {
-        const num = parseFloat(match.replace(/,/g, ''));
-        if (num >= 1000000) {
-            return '';
-        }
-        return match;
-    });
-
-    // Fix extra spaces and newlines
-    text = text.replace(/\n\s*\n/g, '\n\n');
-    text = text.replace(/ +/g, ' ');
-    text = text.replace(/^ +/gm, ''); // Remove leading spaces from all lines
-    
-    // Ensure space after punctuation (excluding period to preserve filenames like NAME.DN)
-    text = text.replace(/([?!,;:])([a-zA-Z])/g, '$1 $2');
-    
-    textInput.value = text.trim();
+    textInput.value = text;
     
     localStorage.setItem(SAVED_TEXT_KEY, textInput.value);
     localStorage.setItem(SAVED_INDEX_KEY, '0');
