@@ -46,7 +46,7 @@ Inside APK.audio the page is served by the portal at `/APK:Softapps/AUDIO/AUDIO.
 
 For deployment, the repository contains a continuous delivery pipeline (`.github/workflows/ftp-deploy.yml`) that uploads `src/` to an FTPS server (`FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD` secrets) whenever a push to the `master` branch occurs. This repository's branch is `master`, not `main`.
 
-Remote: https://github.com/LikeDotAudio/APK.softapp.AUDIO.Reader.git. (The header link in `src/index.html` points at `github.com/LikeDotAudio/Read.Like.audio`.) In the parent repository it is the submodule `PODS/POD.THIN/Softapps/AUDIO/AUDIO.reader`; `AUDIO.Reader` beside it is a symlink to the same folder.
+Remote: https://github.com/LikeDotAudio/APK.softapp.AUDIO.Reader.git. (The header link in `src/index.html` points at `github.com/LikeDotAudio/Read.Like.audio`.) In the parent repository it is the submodule `PODS/POD.THIN/Softapps/AUDIO/AUDIO.reader`. (The `AUDIO.Reader` symlink beside it was removed in PLAN-3418.01: it collided with this folder on case-insensitive checkouts.)
 
 ## Philosophy
 The principles the code follows, and where it shows them:
