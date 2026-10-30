@@ -76,7 +76,7 @@ textInput.addEventListener('paste', () => {
         // Brief visual feedback on the button to show it happened automatically
         btnFormat.textContent = 'Auto-Formatted!';
         setTimeout(() => {
-            btnFormat.textContent = 'Clear Text';
+            btnFormat.textContent = 'Format Text';
         }, 1500);
     }, 10);
 });

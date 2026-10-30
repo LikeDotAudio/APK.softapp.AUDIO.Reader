@@ -24,6 +24,19 @@ sizeSelect.addEventListener('change', () => {
     localStorage.setItem(SAVED_SIZE_KEY, newSize);
 });
 
+// Speed and chosen voice survive a reload, like text, position and size
+const SAVED_RATE_KEY = 'synthesize_rate';
+const SAVED_VOICE_KEY = 'synthesize_voice';
+if (localStorage.getItem(SAVED_RATE_KEY)) {
+    rateSlider.value = localStorage.getItem(SAVED_RATE_KEY);
+    rateValue.textContent = Number(rateSlider.value).toFixed(1);
+}
+
+voiceSelect.addEventListener('change', () => {
+    const chosen = voiceSelect.selectedOptions[0];
+    if (chosen) localStorage.setItem(SAVED_VOICE_KEY, chosen.getAttribute('data-name'));
+});
+
 function populateVoiceList() {
     voices = synth.getVoices();
     voiceSelect.innerHTML = '';
@@ -59,6 +72,12 @@ function populateVoiceList() {
         option.setAttribute('data-name', voice.name);
         voiceSelect.appendChild(option);
     });
+
+    const savedVoice = localStorage.getItem(SAVED_VOICE_KEY);
+    if (savedVoice) {
+        const match = [...voiceSelect.options].find(o => o.getAttribute('data-name') === savedVoice);
+        if (match) match.selected = true;
+    }
 }
 
 // Ensure voices are loaded
@@ -70,6 +89,7 @@ if (speechSynthesis.onvoiceschanged !== undefined) {
 // Update speed label
 rateSlider.addEventListener('input', () => {
     rateValue.textContent = Number(rateSlider.value).toFixed(1);
+    localStorage.setItem(SAVED_RATE_KEY, rateSlider.value);
 });
 
 btnFormat.addEventListener('click', () => {
