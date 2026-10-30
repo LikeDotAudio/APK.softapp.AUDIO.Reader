@@ -58,6 +58,9 @@ The principles the code follows, and where it shows them:
 - **No machinery.** Plain HTML, CSS and four classic scripts; no build, no framework, no server. — `src/index.html`
 - **Where it does not hold:** it is a standalone site that knows no broker. The APK.audio Soft Apps doctrine says a soft app's door out is the bus (`display.json` declares `APK.audio/Gui/Display/Read`), and this app has none; everything stays in the browser.
 
+## Documentation
+The wiki — principles, architecture, delivery, known issues — starts at [Documentation/README.md](Documentation/README.md).
+
 <!-- wiki:smoke -->
 **Smoke test** — ❌ FAIL 0/1 since 2026-10-30 12:51 EDT — [results](Documentation/%F0%9F%A7%A9Manual%20and%20Artifacts/SMOKE.md)
 <!-- /wiki:smoke -->
