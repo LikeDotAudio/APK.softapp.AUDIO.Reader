@@ -30,6 +30,5 @@ Score key: 3 meets the standard · 2 minor gaps · 1 significant gaps · 0 absen
 ## Findings
 1. **Good — standalone and fully offline**; `display.json` declares it cleanly in the launcher.
 2. **Good — rules written down and tested.** [`src/behaviours.js`](../../src/behaviours.js) documents every cleanup and chunking rule, and `test/` encodes them.
-3. **Needs owner: deploy branch.** [`.github/workflows/ftp-deploy.yml`](../../.github/workflows/ftp-deploy.yml) deploys on `master`; the monorepo's other softapps use `main`. Renaming the default branch is a GitHub setting (and moves the deploy trigger), so it is left to the owner.
 
 Delivered items: see [🌍Publishing/DELIVERY.md](../%F0%9F%8C%8DPublishing/DELIVERY.md) "Delivered from the 2026-10-30 audit".
