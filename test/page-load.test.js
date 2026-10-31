@@ -73,3 +73,9 @@ test('Play reads the text chunk by chunk and remembers the place', () => {
   assert.deepEqual(spoken.map(u => u.text), ['Intro', 'First sentence.', 'Second one.']);
   assert.equal(storage.get('synthesize_savedIndex'), '0'); // finished: back to the top
 });
+
+test('display.json declares no topic: nothing here publishes (WS-03)', () => {
+  const d = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'display.json'), 'utf8'));
+  assert.equal(d.topic, undefined);
+  assert.equal(d.app, 'APK:Softapps/AUDIO/AUDIO.reader/src/index.html');
+});

@@ -9,7 +9,7 @@ Read.Like.audio: a teleprompter / text-to-speech reader — cleans pasted text o
 ## Context map
 | Talks to | How (topic / endpoint / file / import) | Relationship |
 |---|---|---|
-| Softapp launcher | `display.json` (`id: Read`, group `Pipeline` › `01 · Event`, `topic: APK.audio/Gui/Display/Read`) | Published Language (manifest) |
+| Softapp launcher | `display.json` (`id: Read`, group `Pipeline` › `01 · Event`, no `topic`: nothing publishes) | Published Language (manifest) |
 | Browser Speech Synthesis API | `window.speechSynthesis`, `SpeechSynthesisUtterance` | Conformist (platform API) |
 | Google Fonts | `<link>` to fonts.googleapis.com (`src/index.html:7`) | Conformist |
 | Browser storage | six `synthesize_*` localStorage keys | Local state only |

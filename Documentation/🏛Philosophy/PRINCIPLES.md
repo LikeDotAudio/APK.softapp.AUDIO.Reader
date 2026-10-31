@@ -13,4 +13,4 @@ The README's Philosophy section, pointed at the lines that keep each rule. Ecosy
 | **The stored keys do not change.** The `synthesize_*` names are the ones every release has written, so a saved place survives any update; renaming one would need a read-old-write-new step in `store.js`. | `src/store.js` `STORE_KEYS` |
 
 ## Where it falls short
-- It knows no broker. The Soft Apps doctrine makes the bus a soft app's door out; `display.json` declares `APK.audio/Gui/Display/Read` and nothing publishes on it.
+- It knows no broker. The Soft Apps doctrine makes the bus a soft app's door out; nothing publishes, so `display.json` declares no `topic` (WS-03).

@@ -45,7 +45,7 @@ The scripts are classic (non-module) scripts sharing globals, loaded in the orde
 ## Running Locally & Deployment
 It has no build step, framework or package dependency, and makes no network request (Inter is used if installed, else the system font). Open `src/index.html` in any modern web browser. Tests: `node --test` from the repo root.
 
-Inside APK.audio the page is served by the portal at `/APK:Softapps/AUDIO/AUDIO.reader/src/index.html` (the `app` field of `display.json`). `display.json` also declares `topic: "APK.audio/Gui/Display/Read"`; the app itself makes no bus connection.
+Inside APK.audio the page is served by the portal at `/APK:Softapps/AUDIO/AUDIO.reader/src/index.html` (the `app` field of `display.json`). `display.json` declares no `topic`: nothing publishes, so the OS gives the display its default identity (`APK.audio/Gui/Display/<name>`).
 
 For deployment, the repository contains a continuous delivery pipeline (`.github/workflows/ftp-deploy.yml`) that uploads `src/` to an FTPS server (`FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD` secrets) whenever a push to the `master` branch occurs, once `node --test` has passed. This repository's branch is `master`, not `main`.
 
@@ -59,7 +59,7 @@ The principles the code follows, and where it shows them:
 - **Never lose the reader's place.** Text, position, text size, speed, voice and notes are written to LocalStorage as they change and restored on load, through `src/store.js`, which never throws. — `src/store.js`
 - **Clean text for the ear, not the eye.** Markup, arrows, pipes and dash runs are removed and units expanded so the voice says what a reader would; periods are left alone so filenames survive. — `src/script.js` (`formatText`), `src/behaviours.js`
 - **No machinery.** Plain HTML, CSS and eight classic scripts; no build, no framework, no server, no network fetch. — `src/index.html`
-- **Where it does not hold:** it is a standalone site that knows no broker. The APK.audio Soft Apps doctrine says a soft app's door out is the bus (`display.json` declares `APK.audio/Gui/Display/Read`), and this app has none; everything stays in the browser.
+- **Where it does not hold:** it is a standalone site that knows no broker. The APK.audio Soft Apps doctrine says a soft app's door out is the bus and this app has none (so `display.json` declares no `topic`); everything stays in the browser.
 
 ## Documentation
 The wiki — principles, architecture, delivery, known issues — starts at [Documentation/README.md](Documentation/README.md).
