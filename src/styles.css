@@ -6,6 +6,10 @@
     --text-secondary: #888888;
     --accent: #ffffff;
     --accent-bg: #333333;
+    /* The brand accent comes from contracts/tokens/brand.json via the vendored
+       vendor/apk-contracts/apk-tokens.css (linked before this file). */
+    --brand-accent: var(--apk-accent);
+    --brand-accent-rgb: var(--apk-accent-rgb);
     --prompter-font-size: 2rem;
     /* No web-font fetch: Inter when it is installed, else the system UI face,
        so the reader runs fully offline. */
@@ -66,8 +70,8 @@ body {
 }
 
 .header-title h1 a:hover {
-    color: rgb(244, 144, 44);
-    text-shadow: 0 0 10px rgba(244, 144, 44, 0.6);
+    color: var(--brand-accent);
+    text-shadow: 0 0 10px rgba(var(--brand-accent-rgb), 0.6);
 }
 
 .controls-section {
@@ -135,7 +139,7 @@ select:focus, input[type="range"]:focus {
 }
 
 .btn:active {
-    background: rgb(244, 144, 44);
+    background: var(--brand-accent);
     border-color: rgb(44, 144, 244);
 }
 
@@ -150,7 +154,7 @@ select:focus, input[type="range"]:focus {
 }
 
 .btn.primary:active {
-    background: rgb(244, 144, 44);
+    background: var(--brand-accent);
     border-color: rgb(44, 144, 244);
 }
 
@@ -201,8 +205,8 @@ select:focus, input[type="range"]:focus {
 }
 
 #toc-list li.toc-active {
-    color: rgb(244, 144, 44);
-    text-shadow: 0 0 10px rgba(244, 144, 44, 0.6);
+    color: var(--brand-accent);
+    text-shadow: 0 0 10px rgba(var(--brand-accent-rgb), 0.6);
     font-weight: 600;
 }
 
@@ -256,8 +260,8 @@ textarea {
 }
 
 .heading-line.active {
-    color: rgb(244, 144, 44) !important;
-    text-shadow: 0 0 12px rgba(244, 144, 44, 0.7);
+    color: var(--brand-accent) !important;
+    text-shadow: 0 0 12px rgba(var(--brand-accent-rgb), 0.7);
 }
 
 .prompter-line:hover {

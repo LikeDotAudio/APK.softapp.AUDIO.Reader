@@ -6,7 +6,7 @@ Open `src/index.html` (Launch Pad: **Read** 🗣, or https://read.like.audio/). 
 ## Files
 | File | Role |
 |---|---|
-| `src/index.html` | Page; loads `styles.css` and, in order, `store.js`, `speech.js`, `chunker.js`, `behaviours.js`, `script.js`, `Prompter.js`, `Header.js`, `NoteBook.js` as classic scripts sharing globals. |
+| `src/index.html` | Page; loads `vendor/apk-contracts/apk-tokens.css`, then `styles.css` and, in order, `store.js`, `speech.js`, `chunker.js`, `behaviours.js`, `script.js`, `Prompter.js`, `Header.js`, `NoteBook.js` as classic scripts sharing globals. |
 | `src/store.js` | The one door to LocalStorage: `STORE_KEYS` (every key) and `store.get/set/getJSON/setJSON`, each guarded by `try/catch` so a private window or bad JSON never throws. |
 | `src/speech.js` | The one door to `speechSynthesis`: `createSpeech()` (`say` one chunk, `stop`, `pause`, `resume`; Chrome's `interrupted` error counts as done, a deliberate `stop` is silent), `sortVoices`, `pickAlternateVoices`. |
 | `src/chunker.js` | Pure `parseTextToChunks` (sentences ≤ 150 chars, TOC) and `headingSize`; also a CommonJS module for the tests. |
@@ -15,7 +15,8 @@ Open `src/index.html` (Launch Pad: **Read** 🗣, or https://read.like.audio/). 
 | `src/Header.js` | Controls: voice list (English first, Google/Premium/Enhanced first), speed, size, Play/Pause/Format/Clear; persists size, speed, voice. |
 | `src/NoteBook.js` | Notes modal: show, copy, clear. |
 | `src/behaviours.js` | The catalogue of every special case, and `FORMATTING_RULES` — the one copy of the formatting rules, loaded first; `formatText` runs its `format`. |
-| `src/styles.css` | Dark theme; `--prompter-font-size` is set from the size control; `--font-ui` is Inter when installed, else the system UI face (no web-font fetch). |
+| `src/vendor/apk-contracts/` | The contract web files vendored by `.apk.scripts/vendor_contract_web.py` (brand and state tokens from `contracts/tokens/`); `check.sh webtokens` holds them byte-identical. Uploaded with `src/`, so the page stays offline. |
+| `src/styles.css` | Dark theme; `--prompter-font-size` is set from the size control; `--font-ui` is Inter when installed, else the system UI face (no web-font fetch). The brand accent is `--brand-accent` / `--brand-accent-rgb`, set from the token's `--apk-accent` / `--apk-accent-rgb`; no colour literal restates it. |
 | `test/` | `node --test`: every formatting and chunking rule, the store and speech adapters, and a stub-DOM load of the whole page. Run before every FTPS deploy. |
 | `display.json` | Launch Pad manifest (`id: Read`, group `Pipeline` / `01 · Event`, `app` → `src/index.html`). |
 
