@@ -7,6 +7,9 @@
     --accent: #ffffff;
     --accent-bg: #333333;
     --prompter-font-size: 2rem;
+    /* No web-font fetch: Inter when it is installed, else the system UI face,
+       so the reader runs fully offline. */
+    --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 * {
@@ -16,7 +19,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-ui);
     background: var(--bg);
     color: var(--text-primary);
     height: 100vh;
@@ -101,7 +104,7 @@ select, input[type="range"] {
     border: 1px solid var(--border);
     color: var(--text-primary);
     border-radius: 4px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-ui);
     outline: none;
     font-size: 0.85rem;
 }
@@ -221,7 +224,7 @@ textarea {
     color: var(--text-primary);
     font-size: 1.1rem;
     line-height: 1.5;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-ui);
     resize: none;
     outline: none;
 }
@@ -235,7 +238,7 @@ textarea {
     color: var(--text-primary);
     font-size: var(--prompter-font-size);
     line-height: 1.6;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-ui);
     overflow-y: auto;
 }
 

@@ -12,6 +12,16 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      # The gate: the formatting/chunking rules, the storage and speech
+      # adapters and a stub-DOM page load (test/). A failure stops the upload.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test before deploy
+        run: node --test
       
       - name: Sync files to FTPS Server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

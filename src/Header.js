@@ -11,9 +11,8 @@ const sizeSelect = document.getElementById('size-select');
 const alternateVoiceCheckbox = document.getElementById('alternate-voice-checkbox');
 
 // Text Size logic
-const SAVED_SIZE_KEY = 'synthesize_textSize';
-if (localStorage.getItem(SAVED_SIZE_KEY)) {
-    const savedSize = localStorage.getItem(SAVED_SIZE_KEY);
+const savedSize = store.get(STORE_KEYS.size);
+if (savedSize) {
     sizeSelect.value = savedSize;
     document.documentElement.style.setProperty('--prompter-font-size', savedSize);
 }
@@ -21,48 +20,31 @@ if (localStorage.getItem(SAVED_SIZE_KEY)) {
 sizeSelect.addEventListener('change', () => {
     const newSize = sizeSelect.value;
     document.documentElement.style.setProperty('--prompter-font-size', newSize);
-    localStorage.setItem(SAVED_SIZE_KEY, newSize);
+    store.set(STORE_KEYS.size, newSize);
 });
 
 // Speed and chosen voice survive a reload, like text, position and size
-const SAVED_RATE_KEY = 'synthesize_rate';
-const SAVED_VOICE_KEY = 'synthesize_voice';
-if (localStorage.getItem(SAVED_RATE_KEY)) {
-    rateSlider.value = localStorage.getItem(SAVED_RATE_KEY);
+const savedRate = store.get(STORE_KEYS.rate);
+if (savedRate) {
+    rateSlider.value = savedRate;
     rateValue.textContent = Number(rateSlider.value).toFixed(1);
 }
 
 voiceSelect.addEventListener('change', () => {
     const chosen = voiceSelect.selectedOptions[0];
-    if (chosen) localStorage.setItem(SAVED_VOICE_KEY, chosen.getAttribute('data-name'));
+    if (chosen) store.set(STORE_KEYS.voice, chosen.getAttribute('data-name'));
 });
 
 function populateVoiceList() {
-    voices = synth.getVoices();
+    // speech.js sorts them: English first, then Google/Premium/Enhanced, then by name
+    voices = speech.voices();
     voiceSelect.innerHTML = '';
-    
-    // Sort voices: Google/Premium English first, then English, then Google/Premium other, then other
-    voices.sort((a, b) => {
-        const aIsEnglish = a.lang.toLowerCase().startsWith('en');
-        const bIsEnglish = b.lang.toLowerCase().startsWith('en');
-        
-        const aIsPremium = a.name.includes('Google') || a.name.includes('Premium') || a.name.includes('Enhanced');
-        const bIsPremium = b.name.includes('Google') || b.name.includes('Premium') || b.name.includes('Enhanced');
-        
-        if (aIsEnglish && !bIsEnglish) return -1;
-        if (!aIsEnglish && bIsEnglish) return 1;
-        
-        if (aIsPremium && !bIsPremium) return -1;
-        if (!aIsPremium && bIsPremium) return 1;
-        
-        return a.name.localeCompare(b.name);
-    });
     
     voices.forEach((voice, i) => {
         const option = document.createElement('option');
         option.textContent = `${voice.name} (${voice.lang})`;
         
-        if (voice.name.includes('Google') || voice.name.includes('Premium') || voice.name.includes('Enhanced')) {
+        if (isPremiumVoice(voice)) {
             option.textContent += ' ⭐ (Best for High Speed)';
         } else if (voice.default) {
             option.textContent += ' -- DEFAULT';
@@ -73,7 +55,7 @@ function populateVoiceList() {
         voiceSelect.appendChild(option);
     });
 
-    const savedVoice = localStorage.getItem(SAVED_VOICE_KEY);
+    const savedVoice = store.get(STORE_KEYS.voice);
     if (savedVoice) {
         const match = [...voiceSelect.options].find(o => o.getAttribute('data-name') === savedVoice);
         if (match) match.selected = true;
@@ -82,14 +64,12 @@ function populateVoiceList() {
 
 // Ensure voices are loaded
 populateVoiceList();
-if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = populateVoiceList;
-}
+speech.onVoicesChanged(populateVoiceList);
 
 // Update speed label
 rateSlider.addEventListener('input', () => {
     rateValue.textContent = Number(rateSlider.value).toFixed(1);
-    localStorage.setItem(SAVED_RATE_KEY, rateSlider.value);
+    store.set(STORE_KEYS.rate, rateSlider.value);
 });
 
 btnFormat.addEventListener('click', () => {
@@ -104,8 +84,8 @@ btnFormat.addEventListener('click', () => {
 
 btnClearText.addEventListener('click', () => {
     textInput.value = '';
-    localStorage.setItem(SAVED_TEXT_KEY, '');
-    localStorage.setItem(SAVED_INDEX_KEY, '0');
+    store.set(STORE_KEYS.text, '');
+    store.set(STORE_KEYS.index, '0');
     // Visual feedback
     btnClearText.textContent = 'Cleared!';
     setTimeout(() => {
@@ -118,13 +98,11 @@ btnPlay.addEventListener('click', () => {
 });
 
 btnPause.addEventListener('click', () => {
-    if (synth.speaking && !synth.paused) {
-        synth.pause();
-    }
+    speech.pause();
 });
 // Sync play button state with speech synthesis
 setInterval(() => {
-    if (synth && synth.speaking && !synth.paused) {
+    if (speech.speaking) {
         btnPlay.classList.add('running');
     } else {
         btnPlay.classList.remove('running');

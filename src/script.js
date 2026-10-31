@@ -2,21 +2,21 @@ const textInput = document.getElementById('text-input');
 const prompterView = document.getElementById('prompter-view');
 
 
-let synth = window.speechSynthesis;
+// speechSynthesis only through speech.js; localStorage only through store.js.
+const speech = createSpeech();
 let voices = [];
-let savedNotes = new Set(JSON.parse(localStorage.getItem('synthesize_notes') || '[]'));
-
-const SAVED_TEXT_KEY = 'synthesize_savedText';
-const SAVED_INDEX_KEY = 'synthesize_savedIndex';
+const storedNotes = store.getJSON(STORE_KEYS.notes, []);
+let savedNotes = new Set(Array.isArray(storedNotes) ? storedNotes : []);
 
 // Restore from local storage on load
-if (localStorage.getItem(SAVED_TEXT_KEY)) {
-    textInput.value = localStorage.getItem(SAVED_TEXT_KEY);
+const restoredText = store.get(STORE_KEYS.text);
+if (restoredText) {
+    textInput.value = restoredText;
 }
 
 textInput.addEventListener('input', () => {
-    localStorage.setItem(SAVED_TEXT_KEY, textInput.value);
-    localStorage.setItem(SAVED_INDEX_KEY, '0');
+    store.set(STORE_KEYS.text, textInput.value);
+    store.set(STORE_KEYS.index, '0');
     
     if (textInput.value.trim() === '') {
         btnFormat.textContent = 'Format Text';
@@ -35,8 +35,8 @@ function formatText() {
     
     textInput.value = text;
     
-    localStorage.setItem(SAVED_TEXT_KEY, textInput.value);
-    localStorage.setItem(SAVED_INDEX_KEY, '0');
+    store.set(STORE_KEYS.text, textInput.value);
+    store.set(STORE_KEYS.index, '0');
 }
 
 
@@ -53,9 +53,3 @@ textInput.addEventListener('paste', () => {
         }, 1500);
     }, 10);
 });
-
-
-
-
-
-

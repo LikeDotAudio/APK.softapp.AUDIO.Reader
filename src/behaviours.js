@@ -52,7 +52,9 @@
 // so what this file documents is what the Format button does.
 const FORMATTING_RULES = {
     stripHtmlAndMarkdown: (text) => {
-        let stripped = text.replace(/<[^>]*>?/gm, '');
+        // A tag is < + a letter, / or ! … >. The old /<[^>]*>?/ also ate a lone
+        // '<' and everything after it on the line ("a <- b" lost the rest).
+        let stripped = text.replace(/<\/?[a-zA-Z!][^>]*>/g, '');
         return stripped.replace(/[*_`~>]/g, ''); // Note: # is excluded
     },
     fixSpacing: (text) => {
@@ -82,10 +84,11 @@ const FORMATTING_RULES = {
             return match;
         });
     },
-    // The whole pipeline, in the order formatText() always applied it.
+        // Arrows go before the HTML/Markdown strip, or '->' loses its '>' to the
+    // Markdown rule and is read as a dash (test/formatting.test.js).
     format(text) {
-        text = this.stripHtmlAndMarkdown(text);
         text = this.removeSpecialSpeechCharacters(text);
+        text = this.stripHtmlAndMarkdown(text);
         text = this.expandUnits(text);
         text = this.skipLargeNumbers(text);
         text = this.fixSpacing(text);

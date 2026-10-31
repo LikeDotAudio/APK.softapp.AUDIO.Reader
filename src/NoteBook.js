@@ -33,7 +33,7 @@ btnCopyNotes.addEventListener('click', async () => {
 btnClearNotes.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear all notes?')) {
         savedNotes.clear();
-        localStorage.setItem('synthesize_notes', '[]');
+        store.setJSON(STORE_KEYS.notes, []);
         notesOutput.value = '';
         
         document.querySelectorAll('.line-action input[type="checkbox"]').forEach(cb => {

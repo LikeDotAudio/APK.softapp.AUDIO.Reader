@@ -32,30 +32,33 @@ Traditional screen readers and text-to-speech apps are often visually overwhelmi
 ## Architecture
 The application logic is modularized inside the `src/` directory for maintainability:
 - **`Header.js`**: Manages the top-level UI controls, sliders, and format buttons.
-- **`Prompter.js`**: The core engine that parses text, calculates depth-based line numbers, tracks the Table of Contents, and runs the SpeechSynthesis logic (including Voice Alternation).
+- **`Prompter.js`**: The prompter: builds the lines with depth-based line numbers and the Table of Contents, and reads them chunk by chunk through `speech.js` (including Voice Alternation).
+- **`chunker.js`**: The pure chunker (`parseTextToChunks`): sentences of at most 150 characters and the TOC.
+- **`speech.js`**: The one door to `speechSynthesis` — voice ordering, the alternate-voice pick, and Chrome's `interrupted` skip.
+- **`store.js`**: The one door to LocalStorage — every key name, every read and write guarded.
 - **`NoteBook.js`**: Manages the interactive notes modal, handling clipping sentences, clearing, and copying to the clipboard.
 - **`script.js`**: Handles basic initialization, local storage binding, and `formatText` (auto-format on paste), which applies `FORMATTING_RULES`.
-- **`behaviours.js`**: The list of every formatting, chunking and speech special case, and `FORMATTING_RULES` — the one copy of the formatting rules. `index.html` loads it before `script.js`, whose `formatText` runs `FORMATTING_RULES.format`; the chunking rules live in `Prompter.js`.
+- **`behaviours.js`**: The list of every formatting, chunking and speech special case, and `FORMATTING_RULES` — the one copy of the formatting rules. `index.html` loads it before `script.js`, whose `formatText` runs `FORMATTING_RULES.format`; the chunking rules live in `chunker.js`.
 
-The scripts are classic (non-module) scripts sharing globals, loaded in the order `behaviours.js`, `script.js`, `Prompter.js`, `Header.js`, `NoteBook.js` by `src/index.html`.
+The scripts are classic (non-module) scripts sharing globals, loaded in the order `store.js`, `speech.js`, `chunker.js`, `behaviours.js`, `script.js`, `Prompter.js`, `Header.js`, `NoteBook.js` by `src/index.html`.
 
 ## Running Locally & Deployment
-It has no build step, framework or package dependency; the only external request is the Inter font from Google Fonts. Open `src/index.html` in any modern web browser. There are no automated tests.
+It has no build step, framework or package dependency, and makes no network request (Inter is used if installed, else the system font). Open `src/index.html` in any modern web browser. Tests: `node --test` from the repo root.
 
 Inside APK.audio the page is served by the portal at `/APK:Softapps/AUDIO/AUDIO.reader/src/index.html` (the `app` field of `display.json`). `display.json` also declares `topic: "APK.audio/Gui/Display/Read"`; the app itself makes no bus connection.
 
-For deployment, the repository contains a continuous delivery pipeline (`.github/workflows/ftp-deploy.yml`) that uploads `src/` to an FTPS server (`FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD` secrets) whenever a push to the `master` branch occurs. This repository's branch is `master`, not `main`.
+For deployment, the repository contains a continuous delivery pipeline (`.github/workflows/ftp-deploy.yml`) that uploads `src/` to an FTPS server (`FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD` secrets) whenever a push to the `master` branch occurs, once `node --test` has passed. This repository's branch is `master`, not `main`.
 
 Remote: https://github.com/LikeDotAudio/APK.softapp.AUDIO.Reader.git. (The header link in `src/index.html` points at `github.com/LikeDotAudio/Read.Like.audio`.) In the parent repository it is the submodule `PODS/POD.THIN/Softapps/AUDIO/AUDIO.reader`. (The `AUDIO.Reader` symlink beside it was removed in PLAN-3418.01: it collided with this folder on case-insensitive checkouts.)
 
 ## Philosophy
 The principles the code follows, and where it shows them:
 
-- **The speech engine is fragile, so feed it small pieces.** Nothing longer than 150 characters is ever handed to `speechSynthesis`; long sentences are broken at punctuation, then at a space, then hard at 149. — `src/Prompter.js` (`parseTextToChunks`)
-- **Keep going on an error.** Chrome's `interrupted` error advances to the next chunk instead of stopping the read; a manual stop is told apart by `isManuallyStopped`. — `src/Prompter.js` (`utterThis.onerror`)
-- **Never lose the reader's place.** Text, position, text size, speed, voice and notes are written to LocalStorage as they change and restored on load. — `src/script.js`, `src/Prompter.js`, `src/Header.js`, `src/NoteBook.js`
+- **The speech engine is fragile, so feed it small pieces.** Nothing longer than 150 characters is ever handed to `speechSynthesis`; long sentences are broken at punctuation, then at a space, then hard at 149. — `src/chunker.js` (`parseTextToChunks`)
+- **Keep going on an error.** Chrome's `interrupted` error advances to the next chunk instead of stopping the read; a deliberate stop is silent. — `src/speech.js` (`say`, `stop`)
+- **Never lose the reader's place.** Text, position, text size, speed, voice and notes are written to LocalStorage as they change and restored on load, through `src/store.js`, which never throws. — `src/store.js`
 - **Clean text for the ear, not the eye.** Markup, arrows, pipes and dash runs are removed and units expanded so the voice says what a reader would; periods are left alone so filenames survive. — `src/script.js` (`formatText`), `src/behaviours.js`
-- **No machinery.** Plain HTML, CSS and five classic scripts; no build, no framework, no server. — `src/index.html`
+- **No machinery.** Plain HTML, CSS and eight classic scripts; no build, no framework, no server, no network fetch. — `src/index.html`
 - **Where it does not hold:** it is a standalone site that knows no broker. The APK.audio Soft Apps doctrine says a soft app's door out is the bus (`display.json` declares `APK.audio/Gui/Display/Read`), and this app has none; everything stays in the browser.
 
 ## Documentation
