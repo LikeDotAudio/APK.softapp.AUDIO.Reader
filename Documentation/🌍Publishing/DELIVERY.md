@@ -13,6 +13,11 @@ The root submodule bump; node image rebuilds. The branch is `master`, not `main`
 
 Repository: `https://github.com/LikeDotAudio/APK.softapp.AUDIO.Reader.git` (the page's header links the older `LikeDotAudio/Read.Like.audio`).
 
+## Delivered 2026-10-31: portable file names (no `:` `|` or case twins)
+
+- The monorepo now checks out on Windows and macOS: no tracked name holds `<>:"|?*`, a trailing dot or space, a device name or a case-only twin. Colon folders became dot folders (the POD.x convention).
+- `vendor/apk-contracts/` re-synced: the bundled topic grammar names its producer `PLUGIN.CHROMECAST/SRC/Discovery.ChromeCast/src/lib.rs`. No behaviour change.
+
 ## Delivered from the 2026-10-30 audit
 - **Default branch `master` → `main`** — renamed on GitHub 2026-10-31 with the owner's go-ahead (GitHub redirects the old name); `ftp-deploy.yml` triggers on `main`.
 - **Pure text rules, tested before deploy** — the chunker moved out of `Prompter.js` into the pure `src/chunker.js`; `test/formatting.test.js` and `test/chunker.test.js` cover every rule in `behaviours.js` (`6.7ms`, `NAME.DN`, ≥ 1 000 000 dropped, the 150-character split, comma/space/hard-cut breaks, headings and TOC). The tests found two real cleanup bugs, now fixed in `behaviours.js`: `->` lost its `>` to the Markdown rule and was left as a dash, and the tag pattern `<[^>]*>?` swallowed everything after a lone `<` (so `a <- b` lost the rest of the line). `.github/workflows/ftp-deploy.yml` runs `node --test` before the FTPS sync. Verified: `node --test` 24/24 pass (the deploy itself was not run).
