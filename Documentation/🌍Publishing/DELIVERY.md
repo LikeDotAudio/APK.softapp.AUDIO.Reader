@@ -5,7 +5,7 @@ No build step and no package dependency: `src/` is served as is. Tests: `node --
 
 ## Where it lands
 - **https://read.like.audio/** — `.github/workflows/ftp-deploy.yml` uploads `src/` over FTPS (`SamKirkland/FTP-Deploy-Action@v4.3.5`, secrets `FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD`) on every push to this repo's `master` branch, after `node --test` passes (the upload step does not run if a test fails). `test/` sits outside `src/`, so it is not uploaded.
-- **apk.audio** — `https://apk.audio/APK:Softapps/AUDIO/AUDIO.reader/src/index.html`. The APK.audio root's `.github/workflows/ci.yml` uploads the Softapps tree with `PODS/POD.THIN/WEB.Frontend-Assets/.apk.scripts/deploy.py` on a push to the root's `main`; this repo reaches it through a submodule bump (`.apk.scripts/deploy_all.py`).
+- **apk.audio** — `https://apk.audio/APK:Softapps/AUDIO/AUDIO.reader/src/index.html`. The APK.audio root's `.github/workflows/ci.yml` uploads the Softapps tree with `.apk.scripts/deploy.py (root)` on a push to the root's `main`; this repo reaches it through a submodule bump (`.apk.scripts/deploy_all.py`).
 - **A node** — copied with the Softapps tree into WEB.Frontend-Assets (`/srv/www/Softapps`) and Storage-Portal (`DATABASE.server.SQL`, `:8080`). After an edit: `up-stack.sh WEB.Frontend-Assets` and `up-stack.sh DATABASE.server.SQL`.
 
 ## Not automated
