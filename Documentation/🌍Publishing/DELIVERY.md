@@ -28,3 +28,6 @@ Repository: `https://github.com/LikeDotAudio/APK.softapp.AUDIO.Reader.git` (the 
 - **Repeated key literals** — gone with `store.js` (`'synthesize_notes'` is spelled once).
 - **Storage-key migration story** — Kept by design: the keys never change (PRINCIPLES "The stored keys do not change"); a rename would add a read-old-write-new step in `store.js`.
 - **WS-03 declared topic with no publisher** (from the SDK/contracts audit) — `display.json` no longer declares `topic: APK.audio/Gui/Display/Read`: the reader has no bus client, so the OS's default display identity applies (as for AUDIO.YouTubeMusic / AUDIO.AppleMusic). README, PRINCIPLES and the audit context map updated; `test/page-load.test.js` fails if a `topic` comes back. Verified: `node --test` passes.
+
+## Releases
+- **Released `2.0.0`, tag `v2.0.0`** (2026-11-01, ROAD-3452, the owner's V2) — no SDK pin; every manifest says 2.0.0; GitHub release `v2.0.0`.
