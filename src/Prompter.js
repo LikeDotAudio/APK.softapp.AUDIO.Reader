@@ -222,7 +222,9 @@ function playChunk(index) {
         rate: parseFloat(rateSlider.value),
         // Also called on Chrome's random 'interrupted' error: carry on to the next chunk.
         onDone: next,
-        onError: (event) => console.error('SpeechSynthesisUtterance.onerror on chunk:', event.error || event),
+        // Any other speech error: stop on this chunk and say why, with Retry from here.
+        onError: (event) => showReaderProblem(speechProblem(event && event.error), {
+            subject: `Chunk ${index + 1} of ${allChunks.length}`, onRetry: () => playChunk(index) }),
         // Highlight words as it reads
         onWord: (startIndex) => {
             if (!activeText) return;

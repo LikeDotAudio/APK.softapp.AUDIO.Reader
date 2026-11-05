@@ -94,3 +94,22 @@ test('speech: a superseded utterance is ignored; voice, rate and word boundaries
   cur.onend();
   assert.equal(done, 1);
 });
+
+test('speechProblem: each Web Speech error word is a catalogue problem with a first step', () => {
+  const { speechProblem } = require('../src/speech.js');
+  assert.equal(speechProblem('not-allowed').problem, 'permission_denied');
+  assert.equal(speechProblem('audio-busy').problem, 'device_busy');
+  assert.equal(speechProblem('synthesis-unavailable').problem, 'unsupported_browser');
+  assert.equal(speechProblem('text-too-long').problem, 'bad_input');
+  for (const e of ['not-allowed', 'network', 'voice-unavailable', 'whatever', undefined]) {
+    const p = speechProblem(e);
+    assert.ok(p.detail && p.fix.length >= 1, String(e));
+  }
+});
+
+test('speech: no engine in the browser is an error, never a throw', () => {
+  const { createSpeech } = require('../src/speech.js');
+  let got = null;
+  assert.equal(createSpeech(null, undefined).say('hi', { onError: (e) => { got = e; } }), null);
+  assert.equal(got.error, 'unsupported');
+});

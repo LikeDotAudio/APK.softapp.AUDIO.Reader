@@ -29,6 +29,32 @@ function pickAlternateVoices(voices) {
     return male && female && male !== female ? { male, female } : null;
 }
 
+// A SpeechSynthesisErrorEvent's .error (the Web Speech API's documented words)
+// → the APK problem code to show, what it means, and the first thing to do.
+// Wire constants only; 'interrupted' never reaches here (say() moves on).
+function speechProblem(error) {
+    const e = String(error || 'unknown');
+    switch (e) {
+        case 'not-allowed': return { problem: 'permission_denied', detail: "speech error 'not-allowed': the browser blocked speaking",
+            fix: ['Click Play yourself: a browser only lets a page speak after a click or key press on it.'] };
+        case 'audio-busy': case 'audio-hardware': return { problem: 'device_busy', detail: `speech error '${e}': the audio output is busy or missing`,
+            fix: ['Check an output device is connected and not held by another app, then press Retry.'] };
+        case 'synthesis-unavailable': case 'synthesis-failed': case 'unsupported':
+            return { problem: 'unsupported_browser', detail: `speech error '${e}': no speech engine answered`,
+                fix: ['Use a browser with built-in voices (Chrome, Edge, Safari); on Linux, install speech-dispatcher and an espeak voice.'] };
+        case 'language-unavailable': case 'voice-unavailable':
+            return { problem: 'unsupported_browser', detail: `speech error '${e}': the chosen voice is not available`,
+                fix: ['Pick another voice in the list, or untick "Change voice every chapter".'] };
+        case 'text-too-long': return { problem: 'bad_input', detail: "speech error 'text-too-long': one chunk is too long to speak",
+            fix: ['Press Format Text, or break the paragraph with a blank line, so the chunk is shorter.'] };
+        case 'invalid-argument': return { problem: 'out_of_range', detail: "speech error 'invalid-argument': the speed or voice was refused",
+            fix: ['Move the Speed slider back towards 1.0x and press Retry.'] };
+        case 'network': return { problem: 'fetch_failed', detail: "speech error 'network': the voice is an online one and could not be reached",
+            fix: ['Check the internet connection, or pick a voice that is not a Google / online one.'] };
+        default: return { problem: 'script_error', detail: `speech error '${e}'`, fix: ['Press Retry; if it repeats, pick another voice.'] };
+    }
+}
+
 function createSpeech(engine = globalThis.speechSynthesis,
                       Utterance = globalThis.SpeechSynthesisUtterance) {
     let current = null;      // held so some browsers do not garbage-collect it mid-chunk
@@ -46,6 +72,8 @@ function createSpeech(engine = globalThis.speechSynthesis,
         // error, so the reader moves on seamlessly; other errors go to onError.
         say(text, { voice, rate, onDone, onError, onWord } = {}) {
             stopping = false;
+            // No speech engine in this browser: say so, never throw into the UI.
+            if (!engine || typeof Utterance !== 'function') { if (onError) onError({ error: 'unsupported' }); return null; }
             const u = new Utterance(text);
             current = u;
             if (voice) u.voice = voice;
@@ -64,5 +92,5 @@ function createSpeech(engine = globalThis.speechSynthesis,
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { sortVoices, isPremiumVoice, pickAlternateVoices, createSpeech };
+    module.exports = { sortVoices, isPremiumVoice, pickAlternateVoices, speechProblem, createSpeech };
 }
